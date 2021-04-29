@@ -7,5 +7,5 @@ public class User {
 	  private String firstName; // not null
 	  private String lastName; // not null
 	  private String email; // not null
-	  private Role role;
+	  private Role role; // this is foreign key 
 	}
