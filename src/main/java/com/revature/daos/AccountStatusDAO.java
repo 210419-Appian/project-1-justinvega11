@@ -1,5 +1,7 @@
 package com.revature.daos;
 
-public interface AccountStatusDAO {
+import com.revature.models.AccountStatus;
 
+public interface AccountStatusDAO {
+	public AccountStatus findById(int id); // return accountstatus byid
 }
