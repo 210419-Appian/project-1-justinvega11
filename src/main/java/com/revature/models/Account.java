@@ -10,15 +10,23 @@ public class Account {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Account(int accountId, double balance, AccountStatus status, AccountType type,int userId) {
+	public Account( double balance, AccountStatus status, AccountType type,int userId) {
 		super();
-		this.accountId = accountId;
+		
 		this.balance = balance;
 		this.status = status;
 		this.type = type;
 		this.userId= userId;
 	}
 	
+	public Account(int accountId, double balance, AccountStatus status, AccountType type, int userId) {
+		super();
+		this.accountId = accountId;
+		this.balance = balance;
+		this.status = status;
+		this.type = type;
+		this.userId = userId;
+	}
 	public int getAccountId() {
 		return accountId;
 	}

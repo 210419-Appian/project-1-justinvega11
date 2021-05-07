@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.revature.controllers.UserController;
+import com.revature.models.UserDTO;
+import com.revature.services.UserService;
 
 public class ControllerServlet extends HttpServlet {
 
@@ -32,7 +34,7 @@ public class ControllerServlet extends HttpServlet {
 		// i.e avenger/1 will get you the first avenger while avenger/2 gets teh second
 		String[] sections = URL.split("/");
 		System.out.println(sections);
-
+		
 		switch (sections[0]) {
 		case "user": // avengers endpoint
 			if (req.getMethod().equals("GET")) {
@@ -53,16 +55,13 @@ public class ControllerServlet extends HttpServlet {
 			}
 
 			break;
-		case "":
-//			if (req.getMethod().equals("GET")) {
-//				if (sections.length == 2) {
-//					HomeController.getHome(resp, sections[1]);
-//				} else {
-//					HomeController.getAllHomes(resp);
-//				}
-//			} else if (req.getMethod().equals("POST")) {
-//				homeControl.addHome(req, resp);
-//			}
+		case "login":
+			if (req.getMethod().equals("POST")) {
+				
+					UserController.login(req,resp);
+				}
+			break;
+
 		}
 	}
 
