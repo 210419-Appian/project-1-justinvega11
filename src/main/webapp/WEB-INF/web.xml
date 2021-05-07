@@ -2,7 +2,7 @@
 <web-app version="4.0" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaeehttp://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd">
-  <display-name>FrontController</display-name>
+  <display-name>rocp-project</display-name>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.htm</welcome-file>
@@ -12,10 +12,7 @@
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
   <!--  Servlet Context for all Servlets-->
-  <context-param>
-  	<param-name>UNusedParam</param-name>
-  	<param-value>blah</param-value>
-  </context-param>
+ 
   
   <servlet>
   	<servlet-name>ControllerServlet</servlet-name>
@@ -23,7 +20,7 @@
   	<!-- set servlet config data -->
   	<init-param>
   		<param-name>BaseURL</param-name>
-  		<param-value>/FrontController/</param-value>
+  		<param-value>/rocp-project/</param-value>
   	</init-param>
   </servlet>
   

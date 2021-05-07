@@ -17,7 +17,7 @@ public class Driver {
 	
 	User a = new User("Vegaj12","password2","Justin2","Vega2","justinvega112@gmail.com",rDao.findById(4)); // write junit verify it send, and verify unique by send twice
 	
-	uDao.addUser(a);
+	//uDao.addUser(a);
 	System.out.println(uDao.findById(1));
 }
 }

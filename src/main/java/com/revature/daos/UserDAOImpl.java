@@ -4,12 +4,17 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.revature.models.User;
 import com.revature.utils.ConnectionUtil;
 
-public class UserDAOImpl implements UserDAO{
+public class UserDAOImpl implements UserDAO {
 	private static RoleDAO rDAO = new RoleDAOImpl();
+	///private static User user = new User();
+
 	@Override
 	public User findById(int id) {
 		try (Connection conn = ConnectionUtil.getConnection()) {// connecting to datbase
@@ -30,13 +35,10 @@ public class UserDAOImpl implements UserDAO{
 				user.setLastName(result.getString("lastname"));
 				user.setEmail(result.getString("email"));
 
-				
-
 				int uRole = result.getInt("role"); // gets role id for user
 				if (uRole != 0) {
 					user.setRole(rDAO.findById(uRole));
 				}
-				
 
 			}
 			return user;
@@ -67,13 +69,10 @@ public class UserDAOImpl implements UserDAO{
 				user.setLastName(result.getString("lastname"));
 				user.setEmail(result.getString("email"));
 
-				
-
-				int uRole = result.getInt("role"); // gets role id for user 
+				int uRole = result.getInt("role"); // gets role id for user
 				if (uRole != 0) {
 					user.setRole(rDAO.findById(uRole));
 				}
-				
 
 			}
 			return user;
@@ -86,12 +85,11 @@ public class UserDAOImpl implements UserDAO{
 
 	@Override
 	public boolean updateUser(User a) {
-		
+
 		try (Connection conn = ConnectionUtil.getConnection()) {
 
-			String sql = "UPDATE user " + "Set userId = ?," + "username = ?," + "password = ?," + "firstName = ?,"
-					+ "lastName = ?,"+"email = ?," + "role = ?"+";";
-			
+			String sql = "UPDATE bank.user " + "Set userId = ?," + "username = ?," + "password = ?," + "firstName = ?,"
+					+ "lastName = ?," + "email = ?," + "role = ?" + ";";
 
 			PreparedStatement statement = conn.prepareStatement(sql);
 
@@ -111,9 +109,10 @@ public class UserDAOImpl implements UserDAO{
 
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
+
 	@Override
 	public boolean addUser(User a) { // add account to db
 
@@ -126,7 +125,7 @@ public class UserDAOImpl implements UserDAO{
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			int index = 0;
-			
+
 			statement.setString(++index, a.getUsername());
 			statement.setString(++index, a.getPassword());
 			statement.setString(++index, a.getFirstName());
@@ -142,6 +141,42 @@ public class UserDAOImpl implements UserDAO{
 		}
 		return false;
 
+	}
+
+	@Override
+	public List<User> allUsers() {
+		try (Connection conn = ConnectionUtil.getConnection()) {
+			
+			String sql = "SELECT * FROM bank.user; ";
+			
+			Statement statement = conn.createStatement(); // generates statement from connection object
+
+			ResultSet result = statement.executeQuery(sql);
+
+			
+			List<User> list = new ArrayList<>(); // create one accountStatus
+
+			while (result.next()) { // grab accountStatus info
+
+				User a = new User();
+				a.setUserId(result.getInt("userid"));
+				a.setUsername(result.getString("username"));
+				a.setPassword(result.getString("password"));
+				a.setFirstName(result.getString("firstname"));
+				a.setLastName(result.getString("lastname"));
+				a.setEmail(result.getString("email"));
+				int uRole = result.getInt("role"); // gets role id for user
+				if (uRole != 0) {
+					a.setRole(rDAO.findById(uRole));
+				}
+				list.add(a);
+			}
+			return list;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

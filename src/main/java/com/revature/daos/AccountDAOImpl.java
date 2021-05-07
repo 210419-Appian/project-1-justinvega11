@@ -113,7 +113,7 @@ public class AccountDAOImpl implements AccountDAO {
 
 		try (Connection conn = ConnectionUtil.getConnection()) {
 
-			String sql = "UPDATE Account " + "Set AccountId = ?," + "balance = ?," + "status = ?," + "type = ?,"
+			String sql = "UPDATE bank.Account " + "Set AccountId = ?," + "balance = ?," + "status = ?," + "type = ?,"
 					+ "userId = ?" + ";";
 
 			PreparedStatement statement = conn.prepareStatement(sql);
