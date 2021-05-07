@@ -32,7 +32,7 @@ public class UserDAOImpl implements UserDAO{
 
 				
 
-				int uRole = result.getInt("role"); // gets type id and popualte Accounttype
+				int uRole = result.getInt("role"); // gets role id for user
 				if (uRole != 0) {
 					user.setRole(rDAO.findById(uRole));
 				}
@@ -56,7 +56,7 @@ public class UserDAOImpl implements UserDAO{
 			statement.setString(1, name); // assigning name to the first '?'
 			ResultSet result = statement.executeQuery(); // executes the query and returns
 
-			User user = new User(); // create one accountStatus
+			User user = new User(); // create one user
 
 			while (result.next()) { // grab accountStatus info
 
@@ -69,7 +69,7 @@ public class UserDAOImpl implements UserDAO{
 
 				
 
-				int uRole = result.getInt("role"); // gets type id and popualte Accounttype
+				int uRole = result.getInt("role"); // gets role id for user 
 				if (uRole != 0) {
 					user.setRole(rDAO.findById(uRole));
 				}
@@ -113,6 +113,35 @@ public class UserDAOImpl implements UserDAO{
 		}
 		
 		return false;
+	}
+	@Override
+	public boolean addUser(User a) { // add account to db
+
+		try (Connection conn = ConnectionUtil.getConnection()) {
+
+			// There is no chance for sql injection with just an integer so this is safe.
+			String sql = "INSERT INTO bank.User (username,password,firstname,lastname,email,role)"
+					+ "	VALUES (?, ?, ?, ?, ?, ?);";
+
+			PreparedStatement statement = conn.prepareStatement(sql);
+
+			int index = 0;
+			
+			statement.setString(++index, a.getUsername());
+			statement.setString(++index, a.getPassword());
+			statement.setString(++index, a.getFirstName());
+			statement.setString(++index, a.getLastName());
+			statement.setString(++index, a.getEmail());
+			statement.setInt(++index, a.getRole().getRoleId());
+
+			statement.execute();
+			return true;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+
 	}
 
 }

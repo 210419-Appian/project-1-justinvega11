@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-  <display-name>rocp-project</display-name>
+<web-app version="4.0" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaeehttp://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd">
+  <display-name>FrontController</display-name>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
     <welcome-file>index.htm</welcome-file>
@@ -9,4 +11,25 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+  <!--  Servlet Context for all Servlets-->
+  <context-param>
+  	<param-name>UNusedParam</param-name>
+  	<param-value>blah</param-value>
+  </context-param>
+  
+  <servlet>
+  	<servlet-name>ControllerServlet</servlet-name>
+  	<servlet-class>com.revature.web.ControllerServlet</servlet-class>
+  	<!-- set servlet config data -->
+  	<init-param>
+  		<param-name>BaseURL</param-name>
+  		<param-value>/FrontController/</param-value>
+  	</init-param>
+  </servlet>
+  
+  <servlet-mapping>
+  	<servlet-name>ControllerServlet</servlet-name>
+  	<url-pattern>/</url-pattern>
+  </servlet-mapping>
+  <!-- we want everything to go to this single servlet so we map to the base URL -->
 </web-app>
