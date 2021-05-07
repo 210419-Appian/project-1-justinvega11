@@ -118,41 +118,29 @@ public class UserController {
 		RoleDAOImpl rDao = new RoleDAOImpl();
 
 		if (u.getRole().getRoleId() == 1) { // check if admin
-			
-			//UserService a = new UserService();
-			
-//			u.setUserId(Integer.parseInt(req.getParameter("userid")));
-//			u.setUsername(req.getParameter("username"));  // checks request from HTML and storing into DTO object
-//			u.setPassword(req.getParameter("password"));
-//			u.setFirstName(req.getParameter("firstname"));
-//			u.setLastName(req.getParameter("lastname"));
-//			u.setEmail(req.getParameter("email"));
-//			u.setRole(rDao.findById(Integer.parseInt(req.getParameter("Role"))));
-//			
-			
-			BufferedReader reader = req.getReader();
+
+			// code to read input
+			BufferedReader reader = req.getReader(); // read input of request
 			StringBuilder sb = new StringBuilder();
 			String line = reader.readLine();
-			while (line != null) {
+			while (line != null) { 
 				sb.append(line);
 				line = reader.readLine();
-
 			}
-
 			String body = new String(sb);
 			User newUser = om.readValue(body, User.class);
 			PrintWriter out = resp.getWriter(); // put into body of response
-			// String json = om.writeValueAsString(User);
-			
+			// code to read input
+
 			if (uService.register(newUser)) {
-				
+
 				out.print(om.writeValueAsString(uDao.findByUsername(newUser.getUsername())));
-				
-				resp.setStatus(200);
+
+				resp.setStatus(201);
 			} else {
 
 				Message m = new Message();
-				m.setMessage("Invalid Credentials");
+				m.setMessage("Invalid fields");
 				out.print(om.writeValueAsString(m));
 				resp.setStatus(400);
 			}
