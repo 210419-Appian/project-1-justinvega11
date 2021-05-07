@@ -61,6 +61,10 @@ public class ControllerServlet extends HttpServlet {
 					UserController.login(req,resp);
 				}
 			break;
+		case "logout":
+			if (req.getMethod().equals("POST")) {
+				UserController.logout(req,resp);
+			}
 
 		}
 	}
