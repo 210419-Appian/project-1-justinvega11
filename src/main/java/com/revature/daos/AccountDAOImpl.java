@@ -14,7 +14,7 @@ public class AccountDAOImpl implements AccountDAO {
 
 	private static AccountStatusDAO asDAO = new AccountStatusDAOImpl();
 	private static AccountTypeDAO atDAO = new AccountTypeDAOImpl();
-
+	@Override
 	public Account findById(int id) { // return account object given ID
 		try (Connection conn = ConnectionUtil.getConnection()) {// connecting to datbase
 			String sql = "SELECT * FROM bank.Account WHERE accountid = ?;"; // store sql statement for database
@@ -49,9 +49,7 @@ public class AccountDAOImpl implements AccountDAO {
 		}
 		return null;
 	}
-
-	
-
+	@Override
 	public List<Account> findByUserId(int userId) {// returns account by user id
 		try (Connection conn = ConnectionUtil.getConnection()) {// connecting to datbase
 			String sql = "SELECT * FROM bank.Account WHERE userId = ?;"; // store sql statement for database
@@ -63,7 +61,8 @@ public class AccountDAOImpl implements AccountDAO {
 			List<Account> list = new ArrayList<>(); // create one accountStatus
 
 			while (result.next()) { // grab accountStatus info
-				Account a = new Account(result.getInt("accountId"),result.getDouble("balance"),null,null,result.getInt("userId"));
+				Account a = new Account(result.getInt("accountId"), result.getDouble("balance"), null, null,
+						result.getInt("userId"));
 				int aStatus = result.getInt("status"); // get status id and populate accountstatus
 				if (aStatus != 0) {
 					a.setStatus(asDAO.findById(aStatus));
@@ -73,7 +72,7 @@ public class AccountDAOImpl implements AccountDAO {
 					a.setType(atDAO.findById(aType));
 				}
 				list.add(a);
-				
+
 			}
 			return list;
 
@@ -82,9 +81,9 @@ public class AccountDAOImpl implements AccountDAO {
 		}
 		return null;
 	}
-
+	@Override
 	public boolean addAccount(Account a) { // add account to db
-	
+
 		try (Connection conn = ConnectionUtil.getConnection()) {
 
 			// There is no chance for sql injection with just an integer so this is safe.
@@ -99,7 +98,6 @@ public class AccountDAOImpl implements AccountDAO {
 			statement.setInt(++index, a.getStatus().getStatusId());
 			statement.setInt(++index, a.getType().getTypeId());
 			statement.setInt(++index, a.getUserId());
-			
 
 			statement.execute();
 			return true;
@@ -108,15 +106,68 @@ public class AccountDAOImpl implements AccountDAO {
 			e.printStackTrace();
 		}
 		return false;
+
+	}
+	@Override
+	public boolean updateAccount(Account a) { // return account object given ID
+
+		try (Connection conn = ConnectionUtil.getConnection()) {
+
+			String sql = "UPDATE Account " + "Set AccountId = ?," + "balance = ?," + "status = ?," + "type = ?,"
+					+ "userId = ?" + ";";
+
+			PreparedStatement statement = conn.prepareStatement(sql);
+
+			int index = 0; // inputs for sql statement from paremeter
+			statement.setInt(++index, a.getAccountId());
+			statement.setDouble(++index, a.getBalance());
+			statement.setInt(++index, a.getStatus().getStatusId());
+			statement.setInt(++index, a.getType().getTypeId());
+			statement.setInt(++index, a.getUserId());
+
+			statement.execute();
+			return true;
+
+		} catch (SQLException e) {
+
+			e.printStackTrace();
+		}
 		
+		return false;
 	}
+	@Override
+	public List<Account> findByAccountStatus(int status) { // return accounts with status note: might need ot change
+		try (Connection conn = ConnectionUtil.getConnection()) {
 
-	public Account updateAccount(Account update) { // return account object given ID
+			String sql = "SELECT * FROM bank.Account WHERE status = ?;";
+			
+			PreparedStatement statement = conn.prepareStatement(sql); // giving sql string to prepare
+			statement.setInt(1, status); // assigning name to the first '?'
+			ResultSet result = statement.executeQuery(); // executes the query and returns
+			
+
+			List<Account> list = new ArrayList<>(); // create one accountStatus
+
+			while (result.next()) { // grab accountStatus info
+				Account a = new Account(result.getInt("accountId"), result.getDouble("balance"), null, null,
+						result.getInt("userId"));
+				int aStatus = result.getInt("status"); // get status id and populate accountstatus
+				if (aStatus != 0) {
+					a.setStatus(asDAO.findById(aStatus));
+				}
+				int aType = result.getInt("type"); // gets type id and popualte Accounttype
+				if (aType != 0) {
+					a.setType(atDAO.findById(aType));
+				}
+				list.add(a);
+
+			}
+			return list;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return null;
-	}
-
-	public List<Account> findByAccountStatus(String status) { // return accounts with status note: might need ot change
-		return null;										// to statusid
 
 	}
 }
