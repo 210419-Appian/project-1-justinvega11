@@ -5,17 +5,20 @@ public class Account {
 	  private double balance;  // not null
 	  private AccountStatus status; // foreign key 
 	  private AccountType type; // foreign key
+	  private int userId;
 	public Account() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	public Account(int accountId, double balance, AccountStatus status, AccountType type) {
+	public Account(int accountId, double balance, AccountStatus status, AccountType type,int userId) {
 		super();
 		this.accountId = accountId;
 		this.balance = balance;
 		this.status = status;
 		this.type = type;
+		this.userId= userId;
 	}
+	
 	public int getAccountId() {
 		return accountId;
 	}
@@ -41,11 +44,19 @@ public class Account {
 		this.type = type;
 	}
 	
+	public int getUserId() {
+		return userId;
+	}
+	public void setUserId(int userId) {
+		this.userId = userId;
+	}
 	@Override
 	public String toString() {
 		return "Account [accountId=" + accountId + ", balance=" + balance + ", status=" + status + ", type=" + type
-				+ "]";
+				+ ", userId=" + userId + "]";
 	}
+	
+	
 	  
 	
 	  
