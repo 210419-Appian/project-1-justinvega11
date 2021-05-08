@@ -23,9 +23,9 @@ public class UserController {
 	private static ObjectMapper om = new ObjectMapper();
 	private static Message m = new Message();
 	private static String s = new String();
+	private static UserDAOImpl uDao = new UserDAOImpl();
 
-
-	public void getUser(HttpServletResponse resp, int id) throws IOException {
+	public void getUser(HttpServletRequest req, HttpServletResponse resp, int id) throws IOException {
 		// TODO Auto-generated method stub
 		User u = uService.findUser(id); // grabs avenger based on ID
 
@@ -34,23 +34,92 @@ public class UserController {
 		String json = om.writeValueAsString(u);
 		System.out.println(json);
 
-		PrintWriter pw = resp.getWriter(); //
-		pw.print(json);
-		resp.setStatus(200); // returns status
+		PrintWriter pw = resp.getWriter();
 
+		if ((u.getRole().getRoleId() == 1) || (u.getRole().getRoleId() == 2)) { // check if admin
+			pw.print(json); // sends object to client
+			resp.setStatus(200);
+		} else {
+
+			m.setMessage("The requested action is not permitted");
+			PrintWriter out = resp.getWriter();
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(401);
+		}
 	}
 
-	public void getAllUsers(HttpServletResponse resp) throws IOException {
+	public void updateUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		// TODO Auto-generated method stub
+		HttpSession ses = req.getSession(false); // grabs session
+		String s = (String) ses.getAttribute("username");
+
+		UserDAOImpl uDao = new UserDAOImpl();
+		User u = uDao.findByUsername(s);
+	
+
+		// code to read
+		// input-----------------------------------------------------------------
+		BufferedReader reader = req.getReader(); // read input of request from post
+		StringBuilder sb = new StringBuilder();
+		String line = reader.readLine();
+		while (line != null) {
+			sb.append(line);
+			line = reader.readLine();
+		}
+		String body = new String(sb);
+		User newUser = om.readValue(body, User.class);
+		PrintWriter out = resp.getWriter(); // put into body of response
+		// code to read input
+		// --------------------------------------------------------------
+
+		System.out.println(newUser);
+		if ((u.getRole().getRoleId() == 1) || (u.getUserId() == newUser.getUserId())) { // check if admin
+			if(uDao.updateUser(newUser)) {
+				String json = om.writeValueAsString(uDao.findById(newUser.getUserId()));
+				System.out.println(json);
+				out.print(json); // sends object to client
+				resp.setStatus(200);
+			} else {
+				Message m = new Message();
+				m.setMessage("Invalid fields");
+				out.print(om.writeValueAsString(m));
+				resp.setStatus(400);
+			}
+			
+		} else {
+
+			m.setMessage("The requested action is not permitted");
+	
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(401);
+		}
+	}
+
+	public void getAllUsers(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		List<User> list = uService.findAll();
 
 		// convert jhava object into a json string that can be written to the body of an
 		// HTTP response
-		String json = om.writeValueAsString(list);
-		System.out.println(json);
+		String json = om.writeValueAsString(list);// populates json object
 
-		PrintWriter pw = resp.getWriter(); //
-		pw.print(json);
-		resp.setStatus(200); // returns status
+		PrintWriter pw = resp.getWriter(); // intilize object to send response
+
+		HttpSession ses = req.getSession(false); // grabs session
+		s = (String) ses.getAttribute("username"); // check privledges
+		UserDAOImpl uDao = new UserDAOImpl();
+		User u = uDao.findByUsername(s);
+		RoleDAOImpl rDao = new RoleDAOImpl();
+
+		if ((u.getRole().getRoleId() == 1) || (u.getRole().getRoleId() == 2)) { // check if admin
+			pw.print(json); // sends object to client
+			resp.setStatus(200);
+		} else {
+
+			m.setMessage("The requested action is not permitted");
+			PrintWriter out = resp.getWriter();
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(401);
+		}
 
 	}
 
@@ -59,10 +128,6 @@ public class UserController {
 		UserDTO u = new UserDTO();
 		UserService a = new UserService();
 		UserDAOImpl uDao = new UserDAOImpl();
-		//u.username = req.getParameter("username"); // checks request from HTML and storing into DTO object
-		//u.password = req.getParameter("password");
-		System.out.println(u.username);
-		System.out.println(u.password);
 
 		BufferedReader reader = req.getReader();
 		StringBuilder sb = new StringBuilder();
@@ -120,20 +185,22 @@ public class UserController {
 		User u = uDao.findByUsername(s);
 		RoleDAOImpl rDao = new RoleDAOImpl();
 
-		if (u.getRole().getRoleId() == 1) { // check if admin 
+		if (u.getRole().getRoleId() == 1) { // check if admin
 
-			// code to read input-----------------------------------------------------------------
+			// code to read
+			// input-----------------------------------------------------------------
 			BufferedReader reader = req.getReader(); // read input of request from post
 			StringBuilder sb = new StringBuilder();
 			String line = reader.readLine();
-			while (line != null) { 
+			while (line != null) {
 				sb.append(line);
 				line = reader.readLine();
 			}
 			String body = new String(sb);
 			User newUser = om.readValue(body, User.class);
 			PrintWriter out = resp.getWriter(); // put into body of response
-			// code to read input --------------------------------------------------------------
+			// code to read input
+			// --------------------------------------------------------------
 
 			if (uService.register(newUser)) { //
 				out.print(om.writeValueAsString(uDao.findByUsername(newUser.getUsername())));
@@ -153,6 +220,5 @@ public class UserController {
 			resp.setStatus(401);
 		}
 	}
-	
-	
+
 }

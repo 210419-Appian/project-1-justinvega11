@@ -120,7 +120,7 @@ public class UserDAOImpl implements UserDAO {
 
 		try (Connection conn = ConnectionUtil.getConnection()) {
 
-			String sql = "UPDATE bank.user " + "Set" + "username = ?," + "password = ?," + "firstName = ?,"
+			String sql = "UPDATE bank.user " + "Set " + "username = ?," + "password = ?," + "firstName = ?,"
 					+ "lastName = ?," + "email = ?," + "role = ?" + "Where userid = ?;";
 
 			PreparedStatement statement = conn.prepareStatement(sql);

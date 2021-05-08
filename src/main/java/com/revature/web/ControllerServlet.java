@@ -17,8 +17,8 @@ import com.revature.services.UserService;
 public class ControllerServlet extends HttpServlet {
 
 	private String BaseURL = null; // variable for the Base URL
-	private UserController avControl = new UserController(); // object to use from usercontroller
-
+	private UserController uControl = new UserController(); // object to use from usercontroller
+	private AccountController aControl = new AccountController();
 	@Override
 	public void init(ServletConfig config) throws ServletException { // initiate servlet
 		BaseURL = config.getInitParameter("BaseURL");
@@ -42,35 +42,37 @@ public class ControllerServlet extends HttpServlet {
 			if (req.getMethod().equals("GET")) {
 				if (sections.length == 2) {
 					int id = Integer.parseInt(sections[1]); // grab id from url
-					avControl.getUser(resp, id); // grab avenger based on id
+					uControl.getUser(req,resp, id); // grab avenger based on id
 				} else {
-					avControl.getAllUsers(resp);
+					uControl.getAllUsers(req,resp);
 				}
+			} else if(req.getMethod().equals("PUT")) {
+				uControl.updateUser(req,resp);
 			}
 
 			break;
 		case "login":
 			if (req.getMethod().equals("POST")) {
-				UserController.login(req, resp);
+				uControl.login(req, resp);
 			}
 			break;
 		case "logout":
 			if (req.getMethod().equals("POST")) {
-				UserController.logout(req, resp);
+				uControl.logout(req, resp);
 			}
 		case "register":
 			if (req.getMethod().equals("POST")) {
-				UserController.register(req, resp);
+				uControl.register(req, resp);
 			}
 		case "account":
 			if (req.getMethod().equals("POST")) {
 				if (sections.length == 2) {
 					if(sections[1].equals("withdraw")) {
-						AccountController.withdraw(req, resp);
+						aControl.withdraw(req, resp);
 					} else if(sections[1].equals("deposit")) {
-						AccountController.deposit(req, resp);
+						aControl.deposit(req, resp);
 					} else if(sections[1].equals("transfer")) {
-						AccountController.transfer(req,resp);
+						aControl.transfer(req,resp);
 					}
 				} else {
 					//avControl.getAllUsers(resp);
