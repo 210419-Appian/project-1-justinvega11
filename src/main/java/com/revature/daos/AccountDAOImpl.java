@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class AccountDAOImpl implements AccountDAO {
 
 	private static AccountStatusDAO asDAO = new AccountStatusDAOImpl();
 	private static AccountTypeDAO atDAO = new AccountTypeDAOImpl();
+
 	@Override
 	public Account findById(int id) { // return account object given ID
 		try (Connection conn = ConnectionUtil.getConnection()) {// connecting to datbase
@@ -49,6 +51,7 @@ public class AccountDAOImpl implements AccountDAO {
 		}
 		return null;
 	}
+
 	@Override
 	public List<Account> findByUserId(int userId) {// returns account by user id
 		try (Connection conn = ConnectionUtil.getConnection()) {// connecting to datbase
@@ -81,19 +84,53 @@ public class AccountDAOImpl implements AccountDAO {
 		}
 		return null;
 	}
+
+	@Override
+	public List<Account> allAccounts() {
+		try (Connection conn = ConnectionUtil.getConnection()) {
+			String sql = "SELECT * FROM bank.Account ;"; // store sql statement for database
+
+			Statement statement = conn.createStatement(); // giving sql string to prepare
+			ResultSet result = statement.executeQuery(sql); // executes the query and returns
+
+			List<Account> list = new ArrayList<>(); // create one accountStatus
+
+			while (result.next()) { // grab accountStatus info
+				Account a = new Account(result.getInt("accountId"), result.getDouble("balance"), null, null,
+						result.getInt("userId"));
+				int aStatus = result.getInt("status"); // get status id and populate accountstatus
+				if (aStatus != 0) {
+					a.setStatus(asDAO.findById(aStatus));
+				}
+				int aType = result.getInt("type"); // gets type id and popualte Accounttype
+				if (aType != 0) {
+					a.setType(atDAO.findById(aType));
+				}
+				list.add(a);
+
+			}
+			return list;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
+
 	@Override
 	public boolean addAccount(Account a) { // add account to db
 
 		try (Connection conn = ConnectionUtil.getConnection()) {
 
 			// There is no chance for sql injection with just an integer so this is safe.
-			String sql = "INSERT INTO bank.Account (balance,status,type,userId)"
-					+ "	VALUES (?, ?, ?, ?);";
+			String sql = "INSERT INTO bank.Account (balance,status,type,userId)" + "	VALUES (?, ?, ?, ?);";
 
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			int index = 0;
-			
+
 			statement.setDouble(++index, a.getBalance());
 			statement.setInt(++index, a.getStatus().getStatusId());
 			statement.setInt(++index, a.getType().getTypeId());
@@ -108,22 +145,23 @@ public class AccountDAOImpl implements AccountDAO {
 		return false;
 
 	}
+
 	@Override
 	public boolean updateAccount(Account a) { // return account object given ID
 
 		try (Connection conn = ConnectionUtil.getConnection()) {
 
-			String sql = "UPDATE bank.account " +"SET balance = ?," + "status = ?," + "type = ?"
-					 + "WHERE accountid = ? ;";
+			String sql = "UPDATE bank.account " + "SET balance = ?," + "status = ?," + "type = ?"
+					+ "WHERE accountid = ? ;";
 
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			int index = 0; // inputs for sql statement from paremeter
-			
+
 			statement.setDouble(++index, a.getBalance());
 			statement.setInt(++index, a.getStatus().getStatusId());
 			statement.setInt(++index, a.getType().getTypeId());
-			//statement.setInt(++index, a.getUserId());
+			// statement.setInt(++index, a.getUserId());
 			statement.setInt(++index, a.getAccountId());
 			statement.execute();
 			return true;
@@ -132,19 +170,19 @@ public class AccountDAOImpl implements AccountDAO {
 
 			e.printStackTrace();
 		}
-		
+
 		return false;
 	}
+
 	@Override
 	public List<Account> findByAccountStatus(int status) { // return accounts with status note: might need ot change
 		try (Connection conn = ConnectionUtil.getConnection()) {
 
 			String sql = "SELECT * FROM bank.Account WHERE status = ?;";
-			
+
 			PreparedStatement statement = conn.prepareStatement(sql); // giving sql string to prepare
 			statement.setInt(1, status); // assigning name to the first '?'
 			ResultSet result = statement.executeQuery(); // executes the query and returns
-			
 
 			List<Account> list = new ArrayList<>(); // create one accountStatus
 

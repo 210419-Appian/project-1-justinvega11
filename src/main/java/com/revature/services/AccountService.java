@@ -1,6 +1,7 @@
 package com.revature.services;
 
 import java.io.PrintWriter;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.daos.AccountDAOImpl;
@@ -82,5 +83,11 @@ public class AccountService {
 			return false;
 		}
 		
+	}
+	public List<Account> findAll() {
+		return aDao.allAccounts();
+	}
+	public Account findById(int id) {
+		return aDao.findById(id);
 	}
 }

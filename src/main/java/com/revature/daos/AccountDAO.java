@@ -10,4 +10,5 @@ public interface AccountDAO {
 	public boolean addAccount(Account a); // add account to db
 	public boolean updateAccount(Account update); // account updated for balance
 	public List<Account> findByAccountStatus(int status); // return accounts with status note: might need ot change to statusid
+	public List<Account> allAccounts();
 }

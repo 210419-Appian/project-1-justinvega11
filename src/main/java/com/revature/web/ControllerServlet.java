@@ -64,7 +64,7 @@ public class ControllerServlet extends HttpServlet {
 			if (req.getMethod().equals("POST")) {
 				uControl.register(req, resp);
 			}
-		case "account":
+		case "accounts":
 			if (req.getMethod().equals("POST")) {
 				if (sections.length == 2) {
 					if(sections[1].equals("withdraw")) {
@@ -77,7 +77,14 @@ public class ControllerServlet extends HttpServlet {
 				} else {
 					//avControl.getAllUsers(resp);
 				}
-
+			} else if(req.getMethod().equals("GET")) {
+				if (sections.length == 2) {
+					int id = Integer.parseInt(sections[1]); // grab id from url
+					aControl.getAccountById(req,resp,id); // grab avenger based on id
+				} else {
+					aControl.getAllAccounts(req, resp);
+				}
+				
 			}
 		}
 	}

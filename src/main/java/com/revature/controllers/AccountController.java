@@ -3,6 +3,7 @@ package com.revature.controllers;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.daos.AccountDAOImpl;
+import com.revature.daos.RoleDAOImpl;
 import com.revature.daos.UserDAOImpl;
 import com.revature.models.Account;
 import com.revature.models.BalanceDTO;
@@ -28,7 +30,48 @@ public class AccountController {
 	private static BalanceDTO bDTO = new BalanceDTO();
 	private static AccountService aService = new AccountService();
 	private static TransferDTO tDTO = new TransferDTO();
+	
+	public static void getAccountById(HttpServletRequest req, HttpServletResponse resp, int id)throws IOException{
+		Account a = aService.findById(id);
 
+		// convert jhava object into a json string that can be written to the body of an
+		// HTTP response
+		String json = om.writeValueAsString(a);// populates json object
+
+		PrintWriter pw = resp.getWriter(); // intilize object to send response
+
+		HttpSession ses = req.getSession(false); // grabs session
+		s = (String) ses.getAttribute("username"); // check privledges
+		UserDAOImpl uDao = new UserDAOImpl();
+		User u = uDao.findByUsername(s);
+		RoleDAOImpl rDao = new RoleDAOImpl();
+		Account acc = aDao.findById(bDTO.accountId);
+		if (acc == null) {
+			Message m = new Message();
+			m.setMessage("Invalid accountID");
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(400);
+		}
+
+		if ((u.getRole().getRoleId() == 1) ||(u.getRole().getRoleId() == 1) || u.getUserId() == acc.getUserId()) { // check if admin
+
+			if (aService.withdraw(bDTO, s)) {
+				
+			} else {
+
+				Message m = new Message();
+				m.setMessage("Invalid funds");
+				out.print(om.writeValueAsString(m));
+				resp.setStatus(400);
+			}
+		} else {
+			// security
+			m.setMessage("The requested action is not permitted");
+			PrintWriter out = resp.getWriter();
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(401);
+		}
+	}
 	public static void withdraw(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		HttpSession ses = req.getSession(false); // grabs session
 		s = (String) ses.getAttribute("username");
@@ -179,5 +222,31 @@ public class AccountController {
 		}
 
 	}
+	public void getAllAccounts(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		List<Account> list = aService.findAll();
 
+		// convert jhava object into a json string that can be written to the body of an
+		// HTTP response
+		String json = om.writeValueAsString(list);// populates json object
+
+		PrintWriter pw = resp.getWriter(); // intilize object to send response
+
+		HttpSession ses = req.getSession(false); // grabs session
+		s = (String) ses.getAttribute("username"); // check privledges
+		UserDAOImpl uDao = new UserDAOImpl();
+		User u = uDao.findByUsername(s);
+		RoleDAOImpl rDao = new RoleDAOImpl();
+
+		if ((u.getRole().getRoleId() == 1) || (u.getRole().getRoleId() == 2)) { // check if admin
+			pw.print(json); // sends object to client
+			resp.setStatus(200);
+		} else {
+
+			m.setMessage("The requested action is not permitted");
+			PrintWriter out = resp.getWriter();
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(401);
+		}
+
+	}
 }

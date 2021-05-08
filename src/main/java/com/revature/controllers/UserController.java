@@ -72,7 +72,7 @@ public class UserController {
 		// code to read input
 		// --------------------------------------------------------------
 
-		System.out.println(newUser);
+		//System.out.println(newUser);
 		if ((u.getRole().getRoleId() == 1) || (u.getUserId() == newUser.getUserId())) { // check if admin
 			if(uDao.updateUser(newUser)) {
 				String json = om.writeValueAsString(uDao.findById(newUser.getUserId()));
