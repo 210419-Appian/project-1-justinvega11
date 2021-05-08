@@ -32,8 +32,9 @@ public class AccountController {
 	private static TransferDTO tDTO = new TransferDTO();
 	
 	public static void getAccountById(HttpServletRequest req, HttpServletResponse resp, int id)throws IOException{
+		
 		Account a = aService.findById(id);
-
+		
 		// convert jhava object into a json string that can be written to the body of an
 		// HTTP response
 		String json = om.writeValueAsString(a);// populates json object
@@ -44,26 +45,18 @@ public class AccountController {
 		s = (String) ses.getAttribute("username"); // check privledges
 		UserDAOImpl uDao = new UserDAOImpl();
 		User u = uDao.findByUsername(s);
-		RoleDAOImpl rDao = new RoleDAOImpl();
-		Account acc = aDao.findById(bDTO.accountId);
-		if (acc == null) {
+
+		
+		if (a == null) {
 			Message m = new Message();
 			m.setMessage("Invalid accountID");
 			out.print(om.writeValueAsString(m));
 			resp.setStatus(400);
 		}
 
-		if ((u.getRole().getRoleId() == 1) ||(u.getRole().getRoleId() == 1) || u.getUserId() == acc.getUserId()) { // check if admin
+		if ((u.getRole().getRoleId() == 1) ||(u.getRole().getRoleId() == 2) || u.getUserId() == a.getUserId()) { // check if admin
 
-			if (aService.withdraw(bDTO, s)) {
-				
-			} else {
-
-				Message m = new Message();
-				m.setMessage("Invalid funds");
-				out.print(om.writeValueAsString(m));
-				resp.setStatus(400);
-			}
+			pw.print(json);
 		} else {
 			// security
 			m.setMessage("The requested action is not permitted");

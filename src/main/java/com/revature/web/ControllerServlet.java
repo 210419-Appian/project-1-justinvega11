@@ -41,8 +41,8 @@ public class ControllerServlet extends HttpServlet {
 		case "user": // avengers endpoint
 			if (req.getMethod().equals("GET")) {
 				if (sections.length == 2) {
-					int id = Integer.parseInt(sections[1]); // grab id from url
-					uControl.getUser(req,resp, id); // grab avenger based on id
+					int id = Integer.parseInt(sections[1]); //FINISH
+					uControl.getUser(req,resp, id); // FINISH
 				} else {
 					uControl.getAllUsers(req,resp);
 				}
@@ -80,7 +80,7 @@ public class ControllerServlet extends HttpServlet {
 			} else if(req.getMethod().equals("GET")) {
 				if (sections.length == 2) {
 					int id = Integer.parseInt(sections[1]); // grab id from url
-					aControl.getAccountById(req,resp,id); // grab avenger based on id
+					AccountController.getAccountById(req,resp,id); // grab avenger based on id
 				} else {
 					aControl.getAllAccounts(req, resp);
 				}
