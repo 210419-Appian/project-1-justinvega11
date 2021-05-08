@@ -14,6 +14,7 @@ import com.revature.daos.UserDAOImpl;
 import com.revature.models.Account;
 import com.revature.models.BalanceDTO;
 import com.revature.models.Message;
+import com.revature.models.TransferDTO;
 import com.revature.models.User;
 import com.revature.services.AccountService;
 
@@ -26,6 +27,7 @@ public class AccountController {
 	private static PrintWriter out;
 	private static BalanceDTO bDTO = new BalanceDTO();
 	private static AccountService aService = new AccountService();
+	private static TransferDTO tDTO = new TransferDTO();
 
 	public static void withdraw(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		HttpSession ses = req.getSession(false); // grabs session
@@ -76,6 +78,7 @@ public class AccountController {
 		}
 
 	}
+
 	public static void deposit(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		HttpSession ses = req.getSession(false); // grabs session
 		s = (String) ses.getAttribute("username");
@@ -107,6 +110,57 @@ public class AccountController {
 
 			if (aService.deposit(bDTO, s)) {
 				m.setMessage("$" + bDTO.amount + " has been deposited to Account #" + bDTO.accountId);
+				out.print(om.writeValueAsString(m));
+				resp.setStatus(201);
+			} else {
+
+				Message m = new Message();
+				m.setMessage("Invalid funds");
+				out.print(om.writeValueAsString(m));
+				resp.setStatus(400);
+			}
+		} else {
+			// security
+			m.setMessage("The requested action is not permitted");
+			PrintWriter out = resp.getWriter();
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(401);
+		}
+
+	}
+
+	public static void transfer(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		HttpSession ses = req.getSession(false); // grabs session
+		s = (String) ses.getAttribute("username");
+
+		// code to read
+		// input-----------------------------------------------------------------
+		BufferedReader reader = req.getReader(); // read input of request from post
+		StringBuilder sb = new StringBuilder();
+		String line = reader.readLine();
+		while (line != null) {
+			sb.append(line);
+			line = reader.readLine();
+		}
+		String body = new String(sb);
+		tDTO = om.readValue(body, TransferDTO.class);
+		out = resp.getWriter(); // put into body of response
+		// code to read input
+		// --------------------------------------------------------------
+		User u = uDao.findByUsername(s);
+		Account accSource = aDao.findById(tDTO.sourceAccountId);
+		Account accTarget = aDao.findById(tDTO.targetAccountId);
+		if (accSource == null|| accTarget == null) {
+			Message m = new Message();
+			m.setMessage("Invalid accountID");
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(400);
+		}
+
+		if ((u.getRole().getRoleId() == 1) || u.getUserId() == accSource.getUserId()) { // check if admin
+
+			if (aService.transfer(tDTO, s)) {
+				m.setMessage("$" + tDTO.amount + " has been deposited from Account #"+tDTO.getSourceAccountId() +"to Account #" + tDTO.getTargetAccountId());
 				out.print(om.writeValueAsString(m));
 				resp.setStatus(201);
 			} else {

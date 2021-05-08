@@ -59,8 +59,10 @@ public class UserController {
 		UserDTO u = new UserDTO();
 		UserService a = new UserService();
 		UserDAOImpl uDao = new UserDAOImpl();
-		u.username = req.getParameter("username"); // checks request from HTML and storing into DTO object
-		u.password = req.getParameter("password");
+		//u.username = req.getParameter("username"); // checks request from HTML and storing into DTO object
+		//u.password = req.getParameter("password");
+		System.out.println(u.username);
+		System.out.println(u.password);
 
 		BufferedReader reader = req.getReader();
 		StringBuilder sb = new StringBuilder();

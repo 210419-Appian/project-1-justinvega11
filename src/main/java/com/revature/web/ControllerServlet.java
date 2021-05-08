@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.revature.controllers.AccountController;
 import com.revature.controllers.UserController;
+import com.revature.daos.UserDAOImpl;
 import com.revature.models.UserDTO;
 import com.revature.services.UserService;
 
@@ -50,7 +51,6 @@ public class ControllerServlet extends HttpServlet {
 			break;
 		case "login":
 			if (req.getMethod().equals("POST")) {
-
 				UserController.login(req, resp);
 			}
 			break;
@@ -70,7 +70,7 @@ public class ControllerServlet extends HttpServlet {
 					} else if(sections[1].equals("deposit")) {
 						AccountController.deposit(req, resp);
 					} else if(sections[1].equals("transfer")) {
-						
+						AccountController.transfer(req,resp);
 					}
 				} else {
 					//avControl.getAllUsers(resp);

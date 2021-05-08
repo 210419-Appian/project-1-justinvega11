@@ -9,10 +9,11 @@ import com.revature.daos.UserDAOImpl;
 import com.revature.models.Account;
 import com.revature.models.BalanceDTO;
 import com.revature.models.Message;
+import com.revature.models.TransferDTO;
 import com.revature.models.User;
 
 public class AccountService {
-	
+
 	private static AccountDAOImpl aDao = new AccountDAOImpl();
 	private static String s = new String();
 	private static UserDAOImpl uDao = new UserDAOImpl();
@@ -22,52 +23,64 @@ public class AccountService {
 	private static BalanceDTO bDTO = new BalanceDTO();
 	private static AccountService aService = new AccountService();
 
-
 	public boolean withdraw(BalanceDTO bDTO, String s) {
 		// TODO Auto-generated method stub
-		
+
 		System.out.println("Line157: accountID:" + bDTO.getAccountId());
 
-
 		Account acc = aDao.findById(bDTO.accountId);
 		if (acc == null) {
 			return false;
 		}
-		User u = uDao.findByUsername(s);
+		
 
-		if ((u.getRole().getRoleId() == 1) || u.getUserId() == acc.getUserId()) { // check if admin
+		if (bDTO.amount < acc.getBalance()) { // check if overdraft
+			acc.setBalance(acc.getBalance() - bDTO.amount);
+			aDao.updateAccount(acc);
+			return true;
+		} else {
 
-			if (bDTO.amount < acc.getBalance()) { // check if overdraft
-				acc.setBalance(acc.getBalance() - bDTO.amount);
-				aDao.updateAccount(acc);
-				return true;
-			} else {
+			return false;
+		}
 
-				return false;
-			}
-		} 
-		return false;
-	
 	}
+
 	public boolean deposit(BalanceDTO bDTO, String s) {
 		// TODO Auto-generated method stub
-		
-		
 
 		Account acc = aDao.findById(bDTO.accountId);
 		if (acc == null) {
 			return false;
 		}
-		User u = uDao.findByUsername(s);
-
-		if ((u.getRole().getRoleId() == 1) || u.getUserId() == acc.getUserId()) { // check if admin
-
 		
-				acc.setBalance(acc.getBalance() + bDTO.amount);
-				aDao.updateAccount(acc);
-				return true;
-		} 
-		return false;
+
+		acc.setBalance(acc.getBalance() + bDTO.amount);
+		aDao.updateAccount(acc);
+		return true;
+
+	}
+
+	public boolean transfer(TransferDTO tDTO, String s2) {
+		Account accSource = aDao.findById(tDTO.sourceAccountId);
+		Account accTarget = aDao.findById(tDTO.targetAccountId);
+		if ((accSource == null) || (accTarget == null)) {
+			return false;
+		}
+		
+		
+		
+		
 	
+		if (tDTO.amount < accSource.getBalance()) { // check if overdraft
+			accSource.setBalance(accSource.getBalance() + tDTO.amount);
+			accTarget.setBalance(accTarget.getBalance() + tDTO.amount);
+			aDao.updateAccount(accSource);
+			aDao.updateAccount(accTarget);
+			return true;
+		} else {
+
+			return false;
+		}
+		
 	}
 }

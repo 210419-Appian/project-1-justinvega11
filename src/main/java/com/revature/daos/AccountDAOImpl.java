@@ -87,13 +87,13 @@ public class AccountDAOImpl implements AccountDAO {
 		try (Connection conn = ConnectionUtil.getConnection()) {
 
 			// There is no chance for sql injection with just an integer so this is safe.
-			String sql = "INSERT INTO bank.Account (AccountId,balance,status,type,userId)"
-					+ "	VALUES (?, ?, ?, ?, ?);";
+			String sql = "INSERT INTO bank.Account (balance,status,type,userId)"
+					+ "	VALUES (?, ?, ?, ?);";
 
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			int index = 0;
-			statement.setInt(++index, a.getAccountId());
+			
 			statement.setDouble(++index, a.getBalance());
 			statement.setInt(++index, a.getStatus().getStatusId());
 			statement.setInt(++index, a.getType().getTypeId());
