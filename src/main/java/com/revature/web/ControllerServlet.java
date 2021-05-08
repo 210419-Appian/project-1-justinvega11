@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.revature.controllers.AccountController;
 import com.revature.controllers.UserController;
 import com.revature.models.UserDTO;
 import com.revature.services.UserService;
@@ -19,7 +20,7 @@ public class ControllerServlet extends HttpServlet {
 
 	@Override
 	public void init(ServletConfig config) throws ServletException { // initiate servlet
-		BaseURL = config.getInitParameter("BaseURL"); 
+		BaseURL = config.getInitParameter("BaseURL");
 	}
 
 	@Override
@@ -34,7 +35,7 @@ public class ControllerServlet extends HttpServlet {
 		// i.e avenger/1 will get you the first avenger while avenger/2 gets teh second
 		String[] sections = URL.split("/");
 		System.out.println(sections);
-		
+
 		switch (sections[0]) {
 		case "user": // avengers endpoint
 			if (req.getMethod().equals("GET")) {
@@ -44,32 +45,38 @@ public class ControllerServlet extends HttpServlet {
 				} else {
 					avControl.getAllUsers(resp);
 				}
-//			} else if (req.getMethod().equals("POST")) {
-//				avControl.addAvenger(req, resp);
-//			} else if (req.getMethod().equals("PUT") && sections.length == 2) {
-//				avControl.putAvenger(req, resp);
-//			} else if (req.getMethod().equals("PATCH") && sections.length == 2) {
-//				avControl.patchAvenger(req, resp);
-//			} else if (req.getMethod().equals("DELETE") && sections.length == 2) {
-//				avControl.killAvenger(resp, sections[1]);
 			}
 
 			break;
 		case "login":
 			if (req.getMethod().equals("POST")) {
-				
-					UserController.login(req,resp);
-				}
+
+				UserController.login(req, resp);
+			}
 			break;
 		case "logout":
 			if (req.getMethod().equals("POST")) {
-				UserController.logout(req,resp);
+				UserController.logout(req, resp);
 			}
 		case "register":
 			if (req.getMethod().equals("POST")) {
-				UserController.register(req,resp);
+				UserController.register(req, resp);
 			}
+		case "account":
+			if (req.getMethod().equals("POST")) {
+				if (sections.length == 2) {
+					if(sections[1].equals("withdraw")) {
+						AccountController.withdraw(req, resp);
+					} else if(sections[1].equals("deposit")) {
+						AccountController.deposit(req, resp);
+					} else if(sections[1].equals("transfer")) {
+						
+					}
+				} else {
+					//avControl.getAllUsers(resp);
+				}
 
+			}
 		}
 	}
 

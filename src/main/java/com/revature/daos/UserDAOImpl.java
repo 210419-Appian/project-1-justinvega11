@@ -82,26 +82,58 @@ public class UserDAOImpl implements UserDAO {
 		}
 		return null;
 	}
+	@Override
+	public User findByEmail(String name) {
+		try (Connection conn = ConnectionUtil.getConnection()) {// connecting to datbase
+			String sql = "SELECT * FROM bank.user WHERE email = ?;"; // store sql statement for database
 
+			PreparedStatement statement = conn.prepareStatement(sql); // giving sql string to prepare
+			statement.setString(1, name); // assigning name to the first '?'
+			ResultSet result = statement.executeQuery(); // executes the query and returns
+
+			User user = new User(); // create one user
+
+			while (result.next()) { // grab accountStatus info
+
+				user.setUserId(result.getInt("userid"));
+				user.setUsername(result.getString("username"));
+				user.setPassword(result.getString("password"));
+				user.setFirstName(result.getString("firstname"));
+				user.setLastName(result.getString("lastname"));
+				user.setEmail(result.getString("email"));
+
+				int uRole = result.getInt("role"); // gets role id for user
+				if (uRole != 0) {
+					user.setRole(rDAO.findById(uRole));
+				}
+
+			}
+			return user;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	@Override
 	public boolean updateUser(User a) {
 
 		try (Connection conn = ConnectionUtil.getConnection()) {
 
-			String sql = "UPDATE bank.user " + "Set userId = ?," + "username = ?," + "password = ?," + "firstName = ?,"
-					+ "lastName = ?," + "email = ?," + "role = ?" + ";";
+			String sql = "UPDATE bank.user " + "Set" + "username = ?," + "password = ?," + "firstName = ?,"
+					+ "lastName = ?," + "email = ?," + "role = ?" + "Where userid = ?;";
 
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			int index = 0; // inputs for sql statement from paremeter
-			statement.setInt(++index, a.getUserId());
+			
 			statement.setString(++index, a.getUsername());
 			statement.setString(++index, a.getPassword());
 			statement.setString(++index, a.getFirstName());
 			statement.setString(++index, a.getLastName());
 			statement.setString(++index, a.getEmail());
 			statement.setInt(++index, a.getRole().getRoleId());
-
+			statement.setInt(++index, a.getUserId());
 			statement.execute();
 			return true;
 

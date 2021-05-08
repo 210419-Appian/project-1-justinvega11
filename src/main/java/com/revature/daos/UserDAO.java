@@ -10,4 +10,5 @@ public interface UserDAO {
 	public boolean updateUser(User update); // replaces user 
 	boolean addUser(User a);
 	public List<User> allUsers();
+	public User findByEmail(String name);
 }

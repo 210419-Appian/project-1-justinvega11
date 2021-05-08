@@ -113,18 +113,18 @@ public class AccountDAOImpl implements AccountDAO {
 
 		try (Connection conn = ConnectionUtil.getConnection()) {
 
-			String sql = "UPDATE bank.Account " + "Set AccountId = ?," + "balance = ?," + "status = ?," + "type = ?,"
-					+ "userId = ?" + ";";
+			String sql = "UPDATE bank.account " +"SET balance = ?," + "status = ?," + "type = ?"
+					 + "WHERE accountid = ? ;";
 
 			PreparedStatement statement = conn.prepareStatement(sql);
 
 			int index = 0; // inputs for sql statement from paremeter
-			statement.setInt(++index, a.getAccountId());
+			
 			statement.setDouble(++index, a.getBalance());
 			statement.setInt(++index, a.getStatus().getStatusId());
 			statement.setInt(++index, a.getType().getTypeId());
-			statement.setInt(++index, a.getUserId());
-
+			//statement.setInt(++index, a.getUserId());
+			statement.setInt(++index, a.getAccountId());
 			statement.execute();
 			return true;
 

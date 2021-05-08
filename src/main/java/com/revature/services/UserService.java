@@ -33,9 +33,20 @@ public class UserService {
 	}
 
 	public boolean register(User a) {
-		if (a.getUserId() == 0) {
+		
+		
+
+		if(uDao.findByUsername(a.getUsername())!= null){
+			return false;
+		}
+		if(uDao.findByEmail(a.getEmail())!=null) {
+			return false;
+		}
+		if (a.getUserId() == 0) { // 
 			return uDao.addUser(a);
 		}
+		
+		
 		return false;
 
 	}

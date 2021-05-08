@@ -24,6 +24,7 @@ public class UserController {
 	private static Message m = new Message();
 	private static String s = new String();
 
+
 	public void getUser(HttpServletResponse resp, int id) throws IOException {
 		// TODO Auto-generated method stub
 		User u = uService.findUser(id); // grabs avenger based on ID
@@ -117,10 +118,10 @@ public class UserController {
 		User u = uDao.findByUsername(s);
 		RoleDAOImpl rDao = new RoleDAOImpl();
 
-		if (u.getRole().getRoleId() == 1) { // check if admin
+		if (u.getRole().getRoleId() == 1) { // check if admin 
 
-			// code to read input
-			BufferedReader reader = req.getReader(); // read input of request
+			// code to read input-----------------------------------------------------------------
+			BufferedReader reader = req.getReader(); // read input of request from post
 			StringBuilder sb = new StringBuilder();
 			String line = reader.readLine();
 			while (line != null) { 
@@ -130,12 +131,10 @@ public class UserController {
 			String body = new String(sb);
 			User newUser = om.readValue(body, User.class);
 			PrintWriter out = resp.getWriter(); // put into body of response
-			// code to read input
+			// code to read input --------------------------------------------------------------
 
-			if (uService.register(newUser)) {
-
+			if (uService.register(newUser)) { //
 				out.print(om.writeValueAsString(uDao.findByUsername(newUser.getUsername())));
-
 				resp.setStatus(201);
 			} else {
 
@@ -152,4 +151,6 @@ public class UserController {
 			resp.setStatus(401);
 		}
 	}
+	
+	
 }
