@@ -22,9 +22,10 @@ public class UserService {
 
 		UserDAOImpl a = new UserDAOImpl();
 
-		User userRequest = a.findByUsername(u.username);
+		User userRequest = a.findByUsername(u.username); // DAOImpl
 		System.out.println(userRequest.toString());
 		// check for null passwords
+		
 		if ((userRequest.getPassword() != null) && (u.password.equals(userRequest.getPassword()))) {
 			return true;
 		}
@@ -32,6 +33,10 @@ public class UserService {
 		return false;
 	}
 
+	
+	
+	
+	
 	public boolean register(User a) {
 		
 		

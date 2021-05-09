@@ -27,11 +27,20 @@ public class UserController {
 
 	public void getUser(HttpServletRequest req, HttpServletResponse resp, int id) throws IOException {
 		// TODO Auto-generated method stub
-		User u = uService.findUser(id); // grabs avenger based on ID
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		
+		s = (String) ses.getAttribute("username"); // check privledges
+		UserDAOImpl uDao = new UserDAOImpl();
+		User u = uDao.findByUsername(s);
+		RoleDAOImpl rDao = new RoleDAOImpl();
+		User uGet = uService.findUser(id); // grabs avenger based on ID
 
 		// convert jhava object into a json string that can be written to the body of an
 		// HTTP response
-		String json = om.writeValueAsString(u);
+		String json = om.writeValueAsString(uGet);
 		System.out.println(json);
 
 		PrintWriter pw = resp.getWriter();
@@ -50,7 +59,11 @@ public class UserController {
 
 	public void updateUser(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		// TODO Auto-generated method stub
-		HttpSession ses = req.getSession(false); // grabs session
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		
 		String s = (String) ses.getAttribute("username");
 
 		UserDAOImpl uDao = new UserDAOImpl();
@@ -104,7 +117,11 @@ public class UserController {
 
 		PrintWriter pw = resp.getWriter(); // intilize object to send response
 
-		HttpSession ses = req.getSession(false); // grabs session
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		
 		s = (String) ses.getAttribute("username"); // check privledges
 		UserDAOImpl uDao = new UserDAOImpl();
 		User u = uDao.findByUsername(s);
@@ -125,10 +142,12 @@ public class UserController {
 
 	public static void login(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 		// TODO Auto-generated method stub
-		UserDTO u = new UserDTO();
-		UserService a = new UserService();
-		UserDAOImpl uDao = new UserDAOImpl();
+		
+		UserDTO u = new UserDTO(); // object from postman
+		UserService a = new UserService(); // class to call service layer
+		UserDAOImpl uDao = new UserDAOImpl(); //  // dao to access user database
 
+		//
 		BufferedReader reader = req.getReader();
 		StringBuilder sb = new StringBuilder();
 		String line = reader.readLine();
@@ -136,11 +155,13 @@ public class UserController {
 			sb.append(line);
 			line = reader.readLine();
 
-		}
+		} // whole thing reads from postman 
 
-		String body = new String(sb);
-		u = om.readValue(body, UserDTO.class);
-		PrintWriter out = resp.getWriter(); // put into body of response
+		String body = new String(sb); // string object holding postman text
+		u = om.readValue(body, UserDTO.class); // assigned postman text into object for java into u
+		PrintWriter out = resp.getWriter(); // put into body of response 
+		
+		// 
 		// String json = om.writeValueAsString(User);
 
 		if (a.loginVerification(u)) {
@@ -160,7 +181,11 @@ public class UserController {
 	}
 
 	public static void logout(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		HttpSession ses = req.getSession(false); // grabs session
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		
 
 		if (ses != null) {
 
@@ -179,7 +204,11 @@ public class UserController {
 	}
 
 	public static void register(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		HttpSession ses = req.getSession(false); // grabs session
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		
 		s = (String) ses.getAttribute("username");
 		UserDAOImpl uDao = new UserDAOImpl();
 		User u = uDao.findByUsername(s);

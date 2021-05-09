@@ -19,6 +19,8 @@ public class ControllerServlet extends HttpServlet {
 	private String BaseURL = null; // variable for the Base URL
 	private UserController uControl = new UserController(); // object to use from usercontroller
 	private AccountController aControl = new AccountController();
+	private static int id;
+
 	@Override
 	public void init(ServletConfig config) throws ServletException { // initiate servlet
 		BaseURL = config.getInitParameter("BaseURL");
@@ -35,19 +37,18 @@ public class ControllerServlet extends HttpServlet {
 		// itself generally you have a final '/' in the url that takes a variable input
 		// i.e avenger/1 will get you the first avenger while avenger/2 gets teh second
 		String[] sections = URL.split("/");
-		System.out.println(sections);
 
 		switch (sections[0]) {
 		case "user": // avengers endpoint
 			if (req.getMethod().equals("GET")) {
 				if (sections.length == 2) {
-					int id = Integer.parseInt(sections[1]); //FINISH
-					uControl.getUser(req,resp, id); // FINISH
+					id = Integer.parseInt(sections[1]); // FINISH
+					uControl.getUser(req, resp, id); // FINISH
 				} else {
-					uControl.getAllUsers(req,resp);
+					uControl.getAllUsers(req, resp);
 				}
-			} else if(req.getMethod().equals("PUT")) {
-				uControl.updateUser(req,resp);
+			} else if (req.getMethod().equals("PUT")) {
+				uControl.updateUser(req, resp);
 			}
 
 			break;
@@ -67,24 +68,37 @@ public class ControllerServlet extends HttpServlet {
 		case "accounts":
 			if (req.getMethod().equals("POST")) {
 				if (sections.length == 2) {
-					if(sections[1].equals("withdraw")) {
+					if (sections[1].equals("withdraw")) {
 						aControl.withdraw(req, resp);
-					} else if(sections[1].equals("deposit")) {
+					} else if (sections[1].equals("deposit")) {
 						aControl.deposit(req, resp);
-					} else if(sections[1].equals("transfer")) {
-						aControl.transfer(req,resp);
+					} else if (sections[1].equals("transfer")) {
+						aControl.transfer(req, resp);
 					}
-				} else {
-					//avControl.getAllUsers(resp);
+				} else if (sections.length == 1) {
+					AccountController.submitAccount(req, resp);
 				}
-			} else if(req.getMethod().equals("GET")) {
+			} else if (req.getMethod().equals("GET")) {
 				if (sections.length == 2) {
-					int id = Integer.parseInt(sections[1]); // grab id from url
-					AccountController.getAccountById(req,resp,id); // grab avenger based on id
-				} else {
+					id = Integer.parseInt(sections[1]); // grab id from url
+					AccountController.getAccountById(req, resp, id); // grab avenger based on id
+				} else if (sections.length == 1) {
 					aControl.getAllAccounts(req, resp);
 				}
-				
+				if (sections.length == 3) {
+					if (sections[1].equals("status")) {
+						id = Integer.parseInt(sections[2]);
+
+						AccountController.getAccountByStatusId(req, resp, id);
+					} else if (sections[1].equals("owner")) {
+						id = Integer.parseInt(sections[2]);
+
+						AccountController.getAccountByUser(req, resp, id);
+					}
+				}
+
+			} else if (req.getMethod().equals("PUT")) {
+				AccountController.updateAccount(req,resp,id);
 			}
 		}
 	}

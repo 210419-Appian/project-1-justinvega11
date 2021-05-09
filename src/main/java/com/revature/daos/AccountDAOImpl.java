@@ -120,7 +120,7 @@ public class AccountDAOImpl implements AccountDAO {
 	
 
 	@Override
-	public boolean addAccount(Account a) { // add account to db
+	public Account addAccount(Account a) { // add account to db
 
 		try (Connection conn = ConnectionUtil.getConnection()) {
 
@@ -132,17 +132,17 @@ public class AccountDAOImpl implements AccountDAO {
 			int index = 0;
 
 			statement.setDouble(++index, a.getBalance());
-			statement.setInt(++index, a.getStatus().getStatusId());
+			statement.setInt(++index, 3); // set to pending
 			statement.setInt(++index, a.getType().getTypeId());
 			statement.setInt(++index, a.getUserId());
 
 			statement.execute();
-			return true;
+			return a;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return null;
 
 	}
 

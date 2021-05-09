@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.daos.AccountDAOImpl;
 import com.revature.daos.RoleDAOImpl;
@@ -31,6 +32,11 @@ public class AccountController {
 	private static AccountService aService = new AccountService();
 	private static TransferDTO tDTO = new TransferDTO();
 	
+	
+	
+	
+	
+	
 	public static void getAccountById(HttpServletRequest req, HttpServletResponse resp, int id)throws IOException{
 		
 		Account a = aService.findById(id);
@@ -40,14 +46,17 @@ public class AccountController {
 		String json = om.writeValueAsString(a);// populates json object
 
 		PrintWriter pw = resp.getWriter(); // intilize object to send response
-
-		HttpSession ses = req.getSession(false); // grabs session
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		
 		s = (String) ses.getAttribute("username"); // check privledges
 		UserDAOImpl uDao = new UserDAOImpl();
 		User u = uDao.findByUsername(s);
 
 		
-		if (a == null) {
+		if (a == null||u==null) {
 			Message m = new Message();
 			m.setMessage("Invalid accountID");
 			out.print(om.writeValueAsString(m));
@@ -66,9 +75,15 @@ public class AccountController {
 		}
 	}
 	public static void withdraw(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		HttpSession ses = req.getSession(false); // grabs session
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		 // grabs session
 		s = (String) ses.getAttribute("username");
 
+		
+		
 		// code to read
 		// input-----------------------------------------------------------------
 		BufferedReader reader = req.getReader(); // read input of request from post
@@ -83,6 +98,9 @@ public class AccountController {
 		out = resp.getWriter(); // put into body of response
 		// code to read input
 		// --------------------------------------------------------------
+		
+		
+		
 		User u = uDao.findByUsername(s);
 		Account acc = aDao.findById(bDTO.accountId);
 		if (acc == null) {
@@ -116,7 +134,11 @@ public class AccountController {
 	}
 
 	public static void deposit(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		HttpSession ses = req.getSession(false); // grabs session
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		 // grabs session
 		s = (String) ses.getAttribute("username");
 
 		// code to read
@@ -166,7 +188,11 @@ public class AccountController {
 	}
 
 	public static void transfer(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		HttpSession ses = req.getSession(false); // grabs session
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		
 		s = (String) ses.getAttribute("username");
 
 		// code to read
@@ -224,7 +250,11 @@ public class AccountController {
 
 		PrintWriter pw = resp.getWriter(); // intilize object to send response
 
-		HttpSession ses = req.getSession(false); // grabs session
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		
 		s = (String) ses.getAttribute("username"); // check privledges
 		UserDAOImpl uDao = new UserDAOImpl();
 		User u = uDao.findByUsername(s);
@@ -241,5 +271,133 @@ public class AccountController {
 			resp.setStatus(401);
 		}
 
+	}
+	public static void getAccountByStatusId(HttpServletRequest req, HttpServletResponse resp, int id) throws IOException {
+		List<Account> list = aService.findByStatusId(id);
+		// convert jhava object into a json string that can be written to the body of an
+		// HTTP response
+		
+		String json = om.writeValueAsString(list);// populates json object
+
+		PrintWriter pw = resp.getWriter(); // intilize object to send response
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		
+		s = (String) ses.getAttribute("username"); // check privledges
+		UserDAOImpl uDao = new UserDAOImpl();
+		User u = uDao.findByUsername(s); // user in the session
+
+		
+		if (u==null) {
+			Message m = new Message();
+			m.setMessage("Invalid accountID");
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(400);
+			return;
+		}
+
+		if ((u.getRole().getRoleId() == 1) ||(u.getRole().getRoleId() == 2)) { // check if admin
+			System.out.println("---list1---");
+			pw.print(json);
+			
+		} else {
+			// security
+			m.setMessage("The requested action is not permitted");
+			PrintWriter out = resp.getWriter();
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(401);
+		}
+		
+	}
+	public static void getAccountByUser(HttpServletRequest req, HttpServletResponse resp, int id) throws IOException {
+		List<Account> list = aService.findByUserId(id);
+		// convert jhava object into a json string that can be written to the body of an
+		// HTTP response
+		
+		String json = om.writeValueAsString(list);// populates json object
+
+		PrintWriter pw = resp.getWriter(); // intilize object to send response
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		
+		s = (String) ses.getAttribute("username"); // check privledges
+		UserDAOImpl uDao = new UserDAOImpl();
+		User u = uDao.findByUsername(s); // user in the session
+
+		
+		if (u==null) {
+			Message m = new Message();
+			m.setMessage("Invalid accountID");
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(400);
+		}
+
+		if ((u.getRole().getRoleId() == 1) ||(u.getRole().getRoleId() == 2) || u.getUserId() == id ) { // check if admin
+
+			pw.print(json);
+		} else {
+			// security
+			m.setMessage("The requested action is not permitted");
+			PrintWriter out = resp.getWriter();
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(401);
+		}
+		
+	}
+	public static void submitAccount(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
+		
+		s = (String) ses.getAttribute("username");
+		UserDAOImpl uDao = new UserDAOImpl();
+		User u = uDao.findByUsername(s);
+		RoleDAOImpl rDao = new RoleDAOImpl();
+
+		
+
+			// code to read
+			// input-----------------------------------------------------------------
+			BufferedReader reader = req.getReader(); // read input of request from post
+			StringBuilder sb = new StringBuilder();
+			String line = reader.readLine();
+			while (line != null) {
+				sb.append(line);
+				line = reader.readLine();
+			}
+			String body = new String(sb);
+			Account newAccount = om.readValue(body, Account.class);
+			PrintWriter out = resp.getWriter(); // put into body of response
+			// code to read input
+			// --------------------------------------------------------------
+			
+			if (u.getRole().getRoleId() == 1 || u.getRole().getRoleId()==2 || (newAccount.getUserId() == u.getUserId()) ) { // check if admin
+				newAccount = aService.submit(newAccount);
+			if (newAccount!=null) { //
+				out.print(om.writeValueAsString(newAccount));
+				resp.setStatus(201);
+			} else {
+
+				Message m = new Message();
+				m.setMessage("Invalid fields");
+				out.print(om.writeValueAsString(m));
+				resp.setStatus(400);
+			}
+		} else {
+			// security
+			m.setMessage("The requested action is not permitted");
+			out = resp.getWriter();
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(401);
+		}
+	}
+	public static void updateAccount(HttpServletRequest req, HttpServletResponse resp, int id) throws IOException{
+		// TODO Auto-generated method stub
+		
 	}
 }

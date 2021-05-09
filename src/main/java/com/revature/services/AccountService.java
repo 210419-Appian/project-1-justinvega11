@@ -5,13 +5,12 @@ import java.util.List;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.revature.daos.AccountDAOImpl;
-import com.revature.daos.UserDAO;
+import com.revature.daos.AccountStatusDAOImpl;
 import com.revature.daos.UserDAOImpl;
 import com.revature.models.Account;
 import com.revature.models.BalanceDTO;
 import com.revature.models.Message;
 import com.revature.models.TransferDTO;
-import com.revature.models.User;
 
 public class AccountService {
 
@@ -23,6 +22,7 @@ public class AccountService {
 	private static PrintWriter out;
 	private static BalanceDTO bDTO = new BalanceDTO();
 	private static AccountService aService = new AccountService();
+	private static AccountStatusDAOImpl atDao = new AccountStatusDAOImpl();
 
 	public boolean withdraw(BalanceDTO bDTO, String s) {
 		// TODO Auto-generated method stub
@@ -33,7 +33,6 @@ public class AccountService {
 		if (acc == null) {
 			return false;
 		}
-		
 
 		if (bDTO.amount < acc.getBalance()) { // check if overdraft
 			acc.setBalance(acc.getBalance() - bDTO.amount);
@@ -53,7 +52,6 @@ public class AccountService {
 		if (acc == null) {
 			return false;
 		}
-		
 
 		acc.setBalance(acc.getBalance() + bDTO.amount);
 		aDao.updateAccount(acc);
@@ -67,11 +65,7 @@ public class AccountService {
 		if ((accSource == null) || (accTarget == null)) {
 			return false;
 		}
-		
-		
-		
-		
-	
+
 		if (tDTO.amount < accSource.getBalance()) { // check if overdraft
 			accSource.setBalance(accSource.getBalance() + tDTO.amount);
 			accTarget.setBalance(accTarget.getBalance() + tDTO.amount);
@@ -82,12 +76,39 @@ public class AccountService {
 
 			return false;
 		}
-		
+
 	}
+
 	public List<Account> findAll() {
 		return aDao.allAccounts();
 	}
+
 	public Account findById(int id) {
 		return aDao.findById(id);
+	}
+
+	public List<Account> findByStatusId(int id) {
+		return aDao.findByAccountStatus(id);
+	}
+
+	public List<Account> findByUserId(int id) {
+		return aDao.findByUserId(id);
+	}
+
+	public Account submit(Account a) {
+		if (a.getAccountId() != 0) {
+			return null;
+		}
+		aDao.addAccount(a);
+		List<Account> buffer = aDao.findByUserId(a.getUserId());
+		for (int i = 0; i < buffer.size(); i++) { // find user id accounts with account type opposite
+			if (atDao.findById(buffer.get(i).getStatus().getStatusId()).getStatusId()==3) {
+				return buffer.get(i);
+			} else {
+				return buffer.get(i++);
+			}
+
+		}
+		return null;
 	}
 }
