@@ -111,4 +111,19 @@ public class AccountService {
 		}
 		return null;
 	}
+
+	public Account update(Account newAccount) {
+		// TODO Auto-generated method stub
+		if (newAccount.getAccountId() != 0) {
+			return null;
+		}
+		
+		if(aDao.updateAccount(newAccount)) {
+			return aDao.findById(newAccount.getAccountId());
+		}
+	
+	
+	
+		return null;
+	}
 }

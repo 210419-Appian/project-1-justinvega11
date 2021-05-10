@@ -24,7 +24,7 @@ public class UserController {
 	private static Message m = new Message();
 	private static String s = new String();
 	private static UserDAOImpl uDao = new UserDAOImpl();
-
+	
 	public void getUser(HttpServletRequest req, HttpServletResponse resp, int id) throws IOException {
 		// TODO Auto-generated method stub
 		if(req.getSession(false)==null) {
@@ -173,6 +173,7 @@ public class UserController {
 			resp.setStatus(200);
 		} else {
 
+
 			Message m = new Message();
 			m.setMessage("Invalid Credentials");
 			out.print(om.writeValueAsString(m));
@@ -181,19 +182,21 @@ public class UserController {
 	}
 
 	public static void logout(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-		if(req.getSession(false)==null) {
+		if(req.getSession(false)==null) { // edge check for session
 			return;
 		}
 		HttpSession ses = req.getSession(); // grabs session or creates
 		
 
 		if (ses != null) {
+			ses.invalidate();// removes sessions from object
 
+			// abstracted how to print to postman
 			m.setMessage("You have successfully logged out " + ses.getAttribute("username"));
 			PrintWriter out = resp.getWriter();
 			out.print(om.writeValueAsString(m));
 			resp.setStatus(200);
-			ses.invalidate();// removes sessions from object
+			
 			return;
 		}
 
@@ -209,10 +212,10 @@ public class UserController {
 		}
 		HttpSession ses = req.getSession(); // grabs session or creates
 		
-		s = (String) ses.getAttribute("username");
-		UserDAOImpl uDao = new UserDAOImpl();
-		User u = uDao.findByUsername(s);
-		RoleDAOImpl rDao = new RoleDAOImpl();
+		String s = (String) ses.getAttribute("username"); // read input from postman stored in session
+		UserDAOImpl uDao = new UserDAOImpl(); // class to use methods form udaoImpl
+		User u = uDao.findByUsername(s); // user class found from session username
+		RoleDAOImpl rDao = new RoleDAOImpl(); // used to find employee or admin
 
 		if (u.getRole().getRoleId() == 1) { // check if admin
 

@@ -9,38 +9,36 @@ import com.revature.models.UserDTO;
 
 public class UserService {
 	private UserDAO uDao = new UserDAOImpl();
-
 	public List<User> findAll() {
 		return uDao.allUsers();
 	}
-
 	public User findUser(int id) {
 		return uDao.findById(id);
 	}
-
+	
+	
+	
+	
 	public boolean loginVerification(UserDTO u) {
-
-		UserDAOImpl a = new UserDAOImpl();
-
-		User userRequest = a.findByUsername(u.username); // DAOImpl
-		System.out.println(userRequest.toString());
-		// check for null passwords
 		
-		if ((userRequest.getPassword() != null) && (u.password.equals(userRequest.getPassword()))) {
+		UserDAOImpl a = new UserDAOImpl(); // create daoimpl class to find user
+		User userRequest = a.findByUsername(u.username); // DAOImpl
+		
+		
+		
+		System.out.println(userRequest.toString()); // print account information
+
+		
+		if ((userRequest.getPassword() != null) && (u.password.equals(userRequest.getPassword()))) { // check if passwords are the same
 			return true;
 		}
-
-		return false;
-	}
-
-	
+		return false;// if password are not equal return false
+	}	
 	
 	
 	
 	public boolean register(User a) {
 		
-		
-
 		if(uDao.findByUsername(a.getUsername())!= null){
 			return false;
 		}
@@ -49,9 +47,7 @@ public class UserService {
 		}
 		if (a.getUserId() == 0) { // 
 			return uDao.addUser(a);
-		}
-		
-		
+		}	
 		return false;
 
 	}
