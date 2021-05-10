@@ -1,0 +1,64 @@
+-- schemas are smaller denominations within a database - a collection of related tables
+
+CREATE SCHEMA bank;
+
+SET	SCHEMA 'bank';
+
+CREATE TABLE "user"(
+	userId serial PRIMARY KEY ,-- REFERENCES Account (accountId),
+	username TEXT nOT NULL UNIQUE,
+	password TEXT nOT NULL,
+	firstName TEXT nOT NULL,
+	lastName TEXT nOT NULL,
+	email TEXT nOT NULL,
+	Role int REFERENCES Role (roleId) -- FOREIGN key
+);
+
+DROP TABLE "user";
+CREATE TABLE Role(
+	roleId serial PRIMARY KEY,
+	role TEXT nOT NULL Unique
+
+);
+
+SELECT * FROM bank.USER;
+CREATE TABLE Account(
+	accountId serial PRIMARY KEY,
+	balance NUMERIC(13,2) nOT NULL,
+	status int REFERENCES AccountStatus (statusId),
+	TYPE int REFERENCES AccountType (typeId),
+	userId int REFERENCES "user" (userId)
+);
+INSERT INTO account ()
+DROP TABLE account ;
+DROP TABLE bank."role" ;
+DROP TABLE bank.accounttype ;
+DROP TABLE bank.accountstatus ;
+DROP TABLE bank."user";
+CREATE TABLE AccountStatus(
+	statusId serial PRIMARY KEY,
+	status TEXT nOT NULL Unique
+
+);
+INSERT INTO accountstatus(status)
+	values('Open'),('Closed'),('Pending'),('Denied');
+INSERT INTO bank.accounttype(type)
+	values('Checking'),('Savings');
+INSERT INTO bank.role(role)
+	values('Admin'),('Employee'),('Standard'),('Premium');
+DELETE FROM accountstatus WHERE status ='Open';
+
+DROP TABLE "accountstatus";
+
+CREATE TABLE AccountType(
+	typeId serial PRIMARY KEY,
+	TYPE TEXT NOT NULL Unique
+
+);
+
+DROP TABLE role;
+DROP TABLE account ;
+truncate TABLE accountstatus ;
+DROP TABLE "accounttype" ;
+
+SELECT * FROM accountstatus WHERE statusid = 3;
