@@ -301,6 +301,7 @@ public class AccountController {
 		if ((u.getRole().getRoleId() == 1) ||(u.getRole().getRoleId() == 2)) { // check if admin
 			System.out.println("---list1---");
 			pw.print(json);
+			resp.setStatus(200);
 			
 		} else {
 			// security
@@ -398,6 +399,51 @@ public class AccountController {
 	}
 	public static void updateAccount(HttpServletRequest req, HttpServletResponse resp, int id) throws IOException{
 		// TODO Auto-generated method stub
+		if(req.getSession(false)==null) {
+			return;
+		}
+		HttpSession ses = req.getSession(); // grabs session or creates
 		
+		s = (String) ses.getAttribute("username");
+		UserDAOImpl uDao = new UserDAOImpl();
+		User u = uDao.findByUsername(s);
+		RoleDAOImpl rDao = new RoleDAOImpl();
+
+		
+
+			// code to read
+			// input-----------------------------------------------------------------
+			BufferedReader reader = req.getReader(); // read input of request from post
+			StringBuilder sb = new StringBuilder();
+			String line = reader.readLine();
+			while (line != null) {
+				sb.append(line);
+				line = reader.readLine();
+			}
+			String body = new String(sb);
+			Account newAccount = om.readValue(body, Account.class);
+			PrintWriter out = resp.getWriter(); // put into body of response
+			// code to read input
+			// --------------------------------------------------------------
+			
+			if (u.getRole().getRoleId() == 1 || u.getRole().getRoleId()==2 || (newAccount.getUserId() == u.getUserId()) ) { // check if admin
+				newAccount = aService.update(newAccount);
+			if (newAccount!=null) { //
+				out.print(om.writeValueAsString(newAccount));
+				resp.setStatus(201);
+			} else {
+
+				Message m = new Message();
+				m.setMessage("Invalid fields");
+				out.print(om.writeValueAsString(m));
+				resp.setStatus(400);
+			}
+		} else {
+			// security
+			m.setMessage("The requested action is not permitted");
+			out = resp.getWriter();
+			out.print(om.writeValueAsString(m));
+			resp.setStatus(401);
+		}
 	}
 }

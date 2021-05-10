@@ -189,14 +189,14 @@ public class UserController {
 		
 
 		if (ses != null) {
-			ses.invalidate();// removes sessions from object
-
+			
 			// abstracted how to print to postman
 			m.setMessage("You have successfully logged out " + ses.getAttribute("username"));
 			PrintWriter out = resp.getWriter();
 			out.print(om.writeValueAsString(m));
 			resp.setStatus(200);
-			
+			ses.invalidate();// removes sessions from object
+
 			return;
 		}
 

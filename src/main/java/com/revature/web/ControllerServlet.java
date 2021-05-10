@@ -64,7 +64,7 @@ public class ControllerServlet extends HttpServlet {
 		case "register":
 			if (req.getMethod().equals("POST")) {
 				uControl.register(req, resp);
-			}
+			}break;
 		case "accounts":
 			if (req.getMethod().equals("POST")) {
 				if (sections.length == 2) {

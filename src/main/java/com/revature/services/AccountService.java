@@ -67,7 +67,7 @@ public class AccountService {
 		}
 
 		if (tDTO.amount < accSource.getBalance()) { // check if overdraft
-			accSource.setBalance(accSource.getBalance() + tDTO.amount);
+			accSource.setBalance(accSource.getBalance() - tDTO.amount);
 			accTarget.setBalance(accTarget.getBalance() + tDTO.amount);
 			aDao.updateAccount(accSource);
 			aDao.updateAccount(accTarget);
@@ -97,6 +97,7 @@ public class AccountService {
 
 	public Account submit(Account a) {
 		if (a.getAccountId() != 0) {
+			System.out.println("null100");
 			return null;
 		}
 		aDao.addAccount(a);
